@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { PostgresClient } from "../db/postgresClient";
 
 export const depositToVault = async (req: Request, res: Response) => {
   const { userAddress, asset, amount } = req.body;
@@ -13,10 +12,8 @@ export const depositToVault = async (req: Request, res: Response) => {
   try {
     console.log("Vault deposit:", userAddress, asset, amount);
 
-    await PostgresClient.query(
-      "INSERT INTO vaults(user_address, asset, amount) VALUES($1, $2, $3)",
-      [userAddress, asset, amount]
-    );
+    // Mock DB insert
+    console.log(`Mock vault deposit: ${userAddress}, ${asset}, ${amount}`);
 
     res.json({ success: true, message: "Vault deposit successful" });
   } catch (err) {
@@ -32,12 +29,13 @@ export const getVaultBalance = async (req: Request, res: Response) => {
     return res.status(400).json({ error: "Missing userAddress" });
 
   try {
-    const { rows } = await PostgresClient.query(
-      "SELECT asset, SUM(amount) as balance FROM vaults WHERE user_address = $1 GROUP BY asset",
-      [userAddress]
-    );
+    // Mocked balances
+    const balances = [
+      { asset: "ETH", balance: 100 },
+      { asset: "ZEC", balance: 50 },
+    ];
 
-    res.json({ userAddress, balances: rows });
+    res.json({ userAddress, balances });
   } catch (err) {
     console.error("Vault balance error:", err);
     res.status(500).json({ error: "Failed to fetch vault balance" });

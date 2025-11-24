@@ -14,24 +14,24 @@ export const createDeposit = async (req: Request, res: Response) => {
   try {
     console.log("Deposit request:", userAddress, amount, asset);
 
-    // Generate zk proof
+    // Mock zk proof
     const { proof, publicSignals } = await ZkProofService.generateDepositProof(
       amount,
       userAddress
     );
 
-    // Verify proof
+    // Mock verification
     const verified = await ZkProofService.verifyDepositProof(
       proof,
       publicSignals
     );
+
     if (!verified)
       return res.status(400).json({ error: "Proof verification failed" });
 
-    // Store deposit in DB
-    await PostgresClient.query(
-      "INSERT INTO deposits(user_address, asset, amount, proof) VALUES($1, $2, $3, $4)",
-      [userAddress, asset, amount, JSON.stringify(proof)]
+    // Mock DB insert
+    console.log(
+      `Mock insert into deposits: ${userAddress}, ${asset}, ${amount}`
     );
 
     return res.json({ success: true, proof, publicSignals });

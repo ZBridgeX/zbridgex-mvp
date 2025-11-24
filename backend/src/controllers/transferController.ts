@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { PostgresClient } from "../db/postgresClient";
 
 export const createTransfer = async (req: Request, res: Response) => {
   const { fromAddress, toAddress, amount } = req.body;
@@ -13,13 +12,12 @@ export const createTransfer = async (req: Request, res: Response) => {
   try {
     console.log("Transfer requested:", fromAddress, toAddress, amount);
 
-    // Record transfer in DB (POC)
-    await PostgresClient.query(
-      "INSERT INTO transfers(from_address, to_address, amount) VALUES($1, $2, $3)",
-      [fromAddress, toAddress, amount]
+    // Mock DB insert
+    console.log(
+      `Mock insert transfer: ${fromAddress} -> ${toAddress}, amount: ${amount}`
     );
 
-    res.json({ success: true, message: "Transfer recorded" });
+    res.json({ success: true, message: "Transfer endpoint works!" });
   } catch (err) {
     console.error("Transfer error:", err);
     res.status(500).json({ error: "Transfer failed" });
