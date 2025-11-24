@@ -1,29 +1,48 @@
-import express from "express";
+// backend/src/index.ts
+import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
-import bodyParser from "body-parser";
+
+// Routes
 import depositRoutes from "./routes/depositRoutes";
 import transferRoutes from "./routes/transferRoutes";
 import vaultRoutes from "./routes/vaultRoutes";
 import zusdxRoutes from "./routes/zusdxRoutes";
 
+// DB placeholder (or Postgres connection)
+import { PostgresClient } from "./db/postgresClient";
+
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 
+// Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Original routes
+// Routes
 app.use("/api/deposits", depositRoutes);
 app.use("/api/transfers", transferRoutes);
+app.use("/api/vaults", vaultRoutes);
+app.use("/api/zusdx", zusdxRoutes);
 
-// Aliases for frontend-friendly endpoints
-app.use("/api/vault", vaultRoutes); // maps to /api/vaults/...
-app.use("/api/zusdx", zusdxRoutes); // maps to /api/mint-zusdx/...
-
-app.get("/", (req, res) => {
-  res.send("ZBridgeX Backend is running 🚀");
+// Health check endpoint
+app.get("/api/health", (req: Request, res: Response) => {
+  res.json({ status: "ok", message: "Backend is running!" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// Global error handler
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ error: "Internal server error" });
+});
+
+// Start server
+app.listen(PORT, async () => {
+  console.log(`Backend server running on http://localhost:${PORT}`);
+
+  try {
+    await PostgresClient.connect(); // optional if using DB
+    console.log("Connected to Postgres database");
+  } catch (err) {
+    console.warn("DB connection failed, continuing with in-memory store");
+  }
 });

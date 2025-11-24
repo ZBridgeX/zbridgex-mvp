@@ -3,6 +3,6 @@ import { createTransfer } from "../controllers/transferController";
 
 const router = Router();
 
-router.post("/", createTransfer);
+router.post("/", createTransfer); // only createTransfer exists
 
 export default router;
