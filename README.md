@@ -1,4 +1,10 @@
-# ZBridgeX
+<p align="center">
+  <img width="500" height="150" alt="image" src="https://github.com/user-attachments/assets/2793cb3f-1589-4546-8302-56d0f88504ab">
+</p>
+
+<p align="center">
+  <a href="" style="color: #a77dff">Website</a> | <a href="" style="color: #a77dff">Demo Video</a> | <a href="https://www.figma.com/deck/jYmED8mcIOLXFMFVNgCIZS" style="color: #a77dff">Pitchdeck</a>
+</p>
 
 ## Background
 
