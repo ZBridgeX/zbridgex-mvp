@@ -30,26 +30,27 @@ Current multi-chain ecosystems face several issues:
 
 ZBridgeX solves these problems through five tightly connected components:
 
-1. ZBridgeX (Privacy Bridge)
+**1. ZBridgeX (Privacy Bridge)**
    - Function: Zcash Sapling powered cross-chain privacy bridge.
    - Capabilities: Shielded, private transfers across NEAR, Solana, Starknet, Mina, and Ethereum L2s.
    - Privacy: Uses ZK-SNARKs, nullifiers, and cross-chain mapping proofs to conceal balances, transaction history, and strategies.
 
-2. ZUSDx (Private Stablecoin)
+**2. ZUSDx (Private Stablecoin)**
    - Function: Over-collateralized private stablecoin.
    - Capabilities: Minted from shielded vault collateral; usable across all supported chains.
    - Utility: Serves as a private, chain-agnostic currency for payments, bridging, and private DeFi.
-3. ZBridgeX Vaults (Private Collateral & Yield Layer)
+     
+**3. ZBridgeX Vaults (Private Collateral & Yield Layer)**
    - Function: Private collateral storage, ZUSDx minting, yield generation, and future RWA integration.
    - Capabilities: Shielded deposits, cross-chain collateral management, private yield strategies.
    - Revenue: Provides protocol sustainability via stability fees, yield spreads, and vault economics.
 
-4. ZBridgeX Launchpad (Private Fundraising)
+**4. ZBridgeX Launchpad (Private Fundraising)**
    - Function: Private cross-chain launchpad for projects and contributors.
    - Capabilities: Users participate in token sales, contributions, and claims without revealing identity or asset holdings.
    - Benefit: Showcases real-world private use cases and drives ecosystem adoption.
 
-5. ZBridgeX ArbRouter (Private Routing Engine)
+**5. ZBridgeX ArbRouter (Private Routing Engine)**
    - Function: Private multi-chain routing and liquidity optimization.
    - Capabilities: Conceals route intent, selects optimal paths, and reduces MEV risk.
    - Benefit: Aggregates liquidity and ensures private, efficient cross-chain transfers.
@@ -90,28 +91,41 @@ Current solutions only address some of these needs. **ZBridgeX provides all of t
 
 ```mermaid
 sequenceDiagram
+    autonumber
+
     participant U as User
-    participant ZBridgeX as ZBridgeX
+    participant FE as Frontend
     participant BE as Backend
-    participant BC as Bridge Contracts
-    participant V as Vaults
+    participant CORE as ZBridgeX Core
+    participant BC as Destination Chain
 
-    U->>ZBridgeX: Connect wallets
-    ZBridgeX->>BE: Request deposit info
-    U->>BE: Send asset to shielded address
-    BE->>ZBridgeX: Show private deposit status
+    U->>FE: Connect wallets
+    U->>FE: Deposit assets (shielded)
+    FE->>BE: Register deposit
+    BE->>CORE: Shielded pool update
 
-    U->>ZBridgeX: Start cross-chain transfer
-    ZBridgeX->>BE: Request transfer proof
-    BE->>BC: Submit ZK proof
-    BC-->>U: Mint/receive destination asset
+    U->>FE: Start cross-chain transfer
+    FE->>BE: Transfer request
+    BE->>CORE: ArbRouter selects route
+    CORE->>BC: Execute private transfer
 
-    U->>ZBridgeX: Deposit collateral in Vault
-    ZBridgeX->>BE: Request collateral proof
-    BE->>V: Register collateral
-    U->>ZBridgeX: Mint ZUSDx
-    ZBridgeX->>BE: Validate with ZK proof
-    BE->>U: Receive ZUSDx
+    U->>FE: Claim assets
+    FE->>BE: Claim request
+    BE->>CORE: Verify proof
+    CORE->>BC: Release assets
+
+    U->>FE: Deposit to Vault / Mint ZUSDx
+    FE->>BE: Vault request
+    BE->>CORE: Update vault + mint ZUSDx
+
+    U->>FE: Join Launchpad privately
+    FE->>BE: Contribution request
+    BE->>CORE: Lock ZUSDx
+
+    U->>FE: View dashboard
+    FE->>BE: Fetch shielded balances
+    BE-->>U: Private balances & logs
+
 ```
 
 ## Technical Architecture
